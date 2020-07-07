@@ -38,101 +38,85 @@
 
             <input type="submit" value="Register">
         </form>
-    </div>
-    <div style="width: 50%; float: left">
-        Add Task:<br>
-        <form action="/addTask" method="post">
-            <input type="text" name="name" placeholder="name"><br>
-            <textarea name="description" placeholder="description"> </textarea><br>
-            <input type="date" name="date"><br>
-            <select name="status">
-                <option value="NEW">NEW</option>
-                <option value="IN_PROGRESS">IN_PROGRESS</option>
-                <option value="FINISHED">FINISHED</option>
-            </select><br>
-            <select name="user_id">
 
-                <%
-                    if (users != null) {
-                        for (User user : users) {
-                %>
-                <option value="<%=user.getId()%>"><%=user.getName()%> <%=user.getSurname()%></option>
+        <div id="info"></div>
+        <div id="tasklist"> Loading....</div>
+        <div style="width: 50%; float: left">
+            Add Task:<br>
+            <form action="/addTask" method="post" id="addTask">
+                <input type="text" id="name" name="name" placeholder="name"><br>
+                <textarea name="description" id="description" placeholder="description"> </textarea><br>
+                <input type="date" id="date" name="date"><br>
+                <select name="status" id="status">
+                    <option value="NEW">NEW</option>
+                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                    <option value="FINISHED">FINISHED</option>
+                </select><br>
+                <select name="user_id" id="user_id">
 
-                <%
+                    <%
+                        if (users != null) {
+                            for (User user : users) {
+                    %>
+                    <option value="<%=user.getId()%>"><%=user.getName()%><%=user.getSurname()%>
+                    </option>
+
+                    <%
+                            }
                         }
-                    }
-                %>
+                    %>
 
-            </select><br><br>
-            <input type="submit" value="Add">
-        </form>
+                </select><br><br>
+                <input type="submit" value="Add">
+            </form>
+        </div>
     </div>
-<div>
-    All Users:<br>
-    <table border="1">
-        <tr>
-            <th>name</th>
-            <th>surname</th>
-            <th>email</th>
-            <th>type</th>
-            <th>picture</th>
-        </tr>
-        <%
-            if (users != null) {
-                for (User user : users) {%>
-        <tr>
-            <td><%=user.getName()%>
-            </td>
-            <td><%=user.getSurname()%>
-            </td>
-            <td><%=user.getEmail()%>
-            </td>
-            <td><%=user.getUserType().name()%>
-            </td>
-            <td> <% if (user.getPictureUrl() != null) { %>
-                <img src="/image?path=<%=user.getPictureUrl()%>" width="30"/>
-                <%}%>
-            </td>
-            <%
-                }
-                }
-            %>
-        </tr>
-    </table>
-</div>
-<div>
-    All Tasks: <br>
-    <table border="1">
-        <tr>
-            <th>name</th>
-            <th>description</th>
-            <th>deadline</th>
-            <th>status</th>
-            <th>user</th>
-        </tr>
-        <%
-            if (tasks != null) { %>
-               <% for (Task task : tasks) { %>
-        <tr>
-            <td>  <a href="/taskPage?id=<%=task.getId()%>"> <%=task.getName()%> </a>
-            </td>
-            <td><%=task.getDescription()%>
-            </td>
-            <td><%=task.getDeadline()%>
-            </td>
-            <td><%=task.getTaskStatus().name()%>
-            </td>
-            <td><%=task.getUser().getName() + " " + task.getUser().getSurname()%>
-            </td>
-
-            <%
-                    } %>
-               <% }
-            %>
-        </tr>
-    </table>
-</div>
 </div>
 
+
+<script src="/js/jquery-3.5.1.min.js" type="text/javascript"></script>
+<script>
+
+    $(document).ready(function () {
+
+        $("#addTask").submit(function (e) {
+            e.preventDefault();
+            let name = $("#name").val()
+            let description = $("#description").val()
+            let date = $("#date").val()
+            let status = $("#status").val()
+            let user_id = $("#user_id").val()
+            $.ajax({
+                url: "/addTask?name="+name+"&description="+description+"&date="+date+"&status="+status+"&user_id="+user_id,
+                method: "POST",
+                success: function (result) {
+                    $("#info").html(result)
+                    $("#name").val("")
+                    $("#description").val("")
+                    $("#date").val("")
+                    $("#status").val("")
+                    $("#user_id").val("")
+                },
+                error: function (result) {
+                    $("#info").html("there is problem with task data!")
+
+                }
+            });
+        })
+
+        let getTaskList = function () {
+            $.ajax({
+                url: "/tasklist",
+                method: "GET",
+                success: function (result) {
+                    $("#tasklist").html(result)
+                }
+            });
+        };
+        getTaskList();
+        setInterval(getTaskList, 2000)
+    })
+
+</script>
 </body>
 </html>

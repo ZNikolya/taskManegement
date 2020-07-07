@@ -36,9 +36,9 @@ public class AddTaskServlet extends HttpServlet {
                     .taskStatus(TaskStatus.valueOf(status))
                     .userId(userId)
                     .build());
-            resp.sendRedirect("/managerHome");
+            resp.getWriter().write("Task added successfully");
         } catch (ParseException e) {
-            e.printStackTrace();
+            throw new RuntimeException("error");
         }
     }
 }

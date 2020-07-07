@@ -18,7 +18,6 @@ import java.io.IOException;
 public class AddCommentsServlet extends HttpServlet {
 
     CommentManager commentManager = new CommentManager();
-    TaskManager taskManager = new TaskManager();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
